@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des Soft Skills</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background: #2c3e50;
+            color: white;
+        }
+        tr:hover {
+            background: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌟 Liste des Soft Skills 🌟</h1>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Description</th>
+        </tr>
+        {% for skill in skills %}
+        <tr>
+            <td>{{ skill.id }}</td>
+            <td>{{ skill.name }}</td>
+            <td>{{ skill.description }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">Aucun Soft Skill ajouté pour le moment.</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
