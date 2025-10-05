@@ -9,6 +9,10 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", home),  # 👈 page d'accueil
     path('skills/', include('skills.urls')),
+    path("api/", include("payments.urls")),
+    path("api/", include("analytics.urls")),
+    path('payments/', include('payments.urls')), 
+    path('analytics/', include('analytics.urls')),
 ]
 
 

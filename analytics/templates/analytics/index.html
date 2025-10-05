@@ -1,0 +1,432 @@
+<!-- 
+    NOTE: La balise Django '{% load static %}' a été retirée car le code est traité comme un fichier HTML statique utilisant le CDN Tailwind. 
+    Les styles sont appliqués directement via les classes Tailwind.
+-->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord Analytics</title>
+    <!-- Chargement du CDN Tailwind CSS pour un style moderne et responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Configuration de police pour un look moderne et lisible */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb; /* Couleur de fond très légère */
+        }
+        /* Style personnalisé pour les cartes */
+        .card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        /* Styles pour le bouton d'action */
+        .action-btn {
+            @apply px-4 py-2 font-semibold text-sm rounded-lg shadow-md transition duration-150 ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- En-tête du Dashboard -->
+    <header class="bg-white shadow-md">
+        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <h1 class="text-3xl font-bold leading-tight text-gray-900">
+                📊 Dashboard Soft Skills (Admin)
+            </h1>
+        </div>
+    </header>
+
+    <!-- Contenu Principal -->
+    <main class="flex-grow max-w-7xl mx-auto py-8 sm:px-6 lg:px-8 w-full">
+        
+        <!-- Section des Indicateurs Clés (Cards) -->
+        <section class="mb-10">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Statistiques Clés</h2>
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                
+                <!-- Carte 1: Total Paiements -->
+                <div class="card bg-white p-6 rounded-xl border border-gray-100 shadow-lg">
+                    <h3 class="text-sm font-medium text-gray-500 truncate">Total Paiements</h3>
+                    <p id="stat-total-payments" class="mt-1 text-3xl font-extrabold text-blue-600">0</p>
+                </div>
+                
+                <!-- Carte 2: Paiements Réussis -->
+                <div class="card bg-white p-6 rounded-xl border border-gray-100 shadow-lg">
+                    <h3 class="text-sm font-medium text-gray-500 truncate">Paiements Réussis</h3>
+                    <p id="stat-successful-payments" class="mt-1 text-3xl font-extrabold text-green-600">0</p>
+                </div>
+                
+                <!-- Carte 3: Paiements Échoués -->
+                <div class="card bg-white p-6 rounded-xl border border-gray-100 shadow-lg">
+                    <h3 class="text-sm font-medium text-gray-500 truncate">Paiements Échoués</h3>
+                    <p id="stat-failed-payments" class="mt-1 text-3xl font-extrabold text-red-600">0</p>
+                </div>
+                
+                <!-- Carte 4: Revenus Totaux -->
+                <div class="card bg-white p-6 rounded-xl border border-gray-100 shadow-lg">
+                    <h3 class="text-sm font-medium text-gray-500 truncate">Revenus Totaux</h3>
+                    <p id="stat-total-revenue" class="mt-1 text-3xl font-extrabold text-orange-500">0 CFA</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section de Gestion des Paiements avec Boutons CRUD (Ajouter/Modifier/Supprimer) -->
+        <section class="bg-white p-6 rounded-xl shadow-lg border border-gray-100">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4 sm:mb-0">Gestion des Transactions</h2>
+                
+                <!-- Conteneur des boutons d'action -->
+                <div class="flex flex-wrap gap-3">
+                    <button id="add-btn" class="action-btn bg-blue-600 text-white hover:bg-blue-700">
+                        <!-- Icône LucidePlus -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline align-text-bottom mr-1"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Ajouter
+                    </button>
+                    <button id="edit-btn" class="action-btn bg-yellow-600 text-white hover:bg-yellow-700 disabled:opacity-50" disabled>
+                        <!-- Icône LucideEdit -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline align-text-bottom mr-1"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        Modifier
+                    </button>
+                    <button id="delete-btn" class="action-btn bg-red-600 text-white hover:bg-red-700 disabled:opacity-50" disabled>
+                        <!-- Icône LucideTrash -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline align-text-bottom mr-1"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        Supprimer
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tableau de Gestion des Données -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <input type="checkbox" id="select-all" class="h-4 w-4 text-blue-600 rounded">
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Transaction</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Utilisateur</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Montant (CFA)</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transaction-table-body" class="bg-white divide-y divide-gray-200">
+                        <!-- Les transactions seront injectées ici par JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <p class="mt-4 text-sm text-gray-500">
+                La gestion des données est simulée en mémoire (RAM) pour cette démo.
+            </p>
+        </section>
+
+    </main>
+
+    <!-- Pied de Page -->
+    <footer class="mt-8 py-4 bg-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-sm text-gray-400">
+                © 2025 - SoftSkills App - Back-Office
+            </p>
+        </div>
+    </footer>
+    
+    <!-- Modal (Formulaire Ajouter/Modifier) -->
+    <div id="transaction-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 hidden items-center justify-center z-50 p-4" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all">
+            <div class="p-6">
+                <h3 id="modal-title" class="text-2xl font-bold text-gray-900 mb-4">Ajouter une Transaction</h3>
+                <form id="transaction-form" class="space-y-4">
+                    <input type="hidden" id="transaction-id">
+                    
+                    <div>
+                        <label for="user-input" class="block text-sm font-medium text-gray-700">Utilisateur (Nom/Email)</label>
+                        <input type="text" id="user-input" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 border">
+                    </div>
+
+                    <div class="flex space-x-4">
+                        <div class="w-1/2">
+                            <label for="amount-input" class="block text-sm font-medium text-gray-700">Montant (CFA)</label>
+                            <input type="number" id="amount-input" required min="100" class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 border">
+                        </div>
+                        <div class="w-1/2">
+                            <label for="status-input" class="block text-sm font-medium text-gray-700">Statut</label>
+                            <select id="status-input" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 border">
+                                <option value="Réussi">Réussi</option>
+                                <option value="Échoué">Échoué</option>
+                                <option value="En attente">En attente</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="date-input" class="block text-sm font-medium text-gray-700">Date</label>
+                        <input type="date" id="date-input" required class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 border">
+                    </div>
+
+                    <div class="pt-4 flex justify-end space-x-3">
+                        <button type="button" id="cancel-modal" class="action-btn bg-gray-200 text-gray-700 hover:bg-gray-300">Annuler</button>
+                        <button type="submit" id="save-transaction-btn" class="action-btn bg-blue-600 text-white hover:bg-blue-700">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Confirmation de Suppression -->
+    <div id="delete-modal" class="fixed inset-0 bg-gray-600 bg-opacity-75 hidden items-center justify-center z-50 p-4" aria-labelledby="delete-modal-title" role="dialog" aria-modal="true">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all">
+            <div class="p-6">
+                <h3 id="delete-modal-title" class="text-xl font-bold text-red-700 mb-3">Confirmer la Suppression</h3>
+                <p class="text-sm text-gray-600 mb-4">Êtes-vous sûr de vouloir supprimer les transactions sélectionnées ? Cette action est irréversible.</p>
+                <div class="pt-4 flex justify-end space-x-3">
+                    <button type="button" id="cancel-delete" class="action-btn bg-gray-200 text-gray-700 hover:bg-gray-300">Annuler</button>
+                    <button type="button" id="confirm-delete" class="action-btn bg-red-600 text-white hover:bg-red-700">Supprimer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tableau de données simulées en mémoire
+        let transactions = [
+            { id: 'TRX-001', user: 'Jane Doe', amount: 20000, status: 'Réussi', date: '2025-09-28' },
+            { id: 'TRX-002', user: 'John Smith', amount: 5000, status: 'Échoué', date: '2025-09-27' },
+            { id: 'TRX-003', user: 'Alain Dupont', amount: 45000, status: 'Réussi', date: '2025-09-29' },
+            { id: 'TRX-004', user: 'Fatou Diallo', amount: 12000, status: 'En attente', date: '2025-09-30' },
+        ];
+
+        let isEditing = false;
+        
+        // Sélecteurs DOM
+        const tableBody = document.getElementById('transaction-table-body');
+        const selectAllCheckbox = document.getElementById('select-all');
+        const addBtn = document.getElementById('add-btn');
+        const editBtn = document.getElementById('edit-btn');
+        const deleteBtn = document.getElementById('delete-btn');
+        const transactionModal = document.getElementById('transaction-modal');
+        const deleteModal = document.getElementById('delete-modal');
+        const transactionForm = document.getElementById('transaction-form');
+        const modalTitle = document.getElementById('modal-title');
+        const saveBtn = document.getElementById('save-transaction-btn');
+
+        // --- Fonctions de mise à jour de l'UI et des Statistiques ---
+
+        // Fonction pour mettre à jour les statistiques
+        function updateStats() {
+            const totalPayments = transactions.length;
+            const successfulPayments = transactions.filter(t => t.status === 'Réussi').length;
+            const failedPayments = transactions.filter(t => t.status === 'Échoué').length;
+            const totalRevenue = transactions
+                .filter(t => t.status === 'Réussi')
+                .reduce((sum, t) => sum + t.amount, 0);
+
+            document.getElementById('stat-total-payments').textContent = totalPayments;
+            document.getElementById('stat-successful-payments').textContent = successfulPayments;
+            document.getElementById('stat-failed-payments').textContent = failedPayments;
+            document.getElementById('stat-total-revenue').textContent = formatCFA(totalRevenue);
+        }
+
+        // Fonction pour formater le montant en CFA (simple)
+        function formatCFA(amount) {
+            return new Intl.NumberFormat('fr-FR', {
+                style: 'currency',
+                currency: 'XOF', // Code ISO pour le Franc CFA
+                minimumFractionDigits: 0
+            }).format(amount).replace('XOF', 'CFA');
+        }
+
+        // Fonction pour générer le badge de statut
+        function getStatusBadge(status) {
+            let color;
+            switch (status) {
+                case 'Réussi':
+                    color = 'bg-green-100 text-green-800';
+                    break;
+                case 'Échoué':
+                    color = 'bg-red-100 text-red-800';
+                    break;
+                case 'En attente':
+                    color = 'bg-yellow-100 text-yellow-800';
+                    break;
+                default:
+                    color = 'bg-gray-100 text-gray-800';
+            }
+            return `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${color}">${status}</span>`;
+        }
+
+        // Fonction principale pour rendre le tableau
+        function renderTable() {
+            tableBody.innerHTML = '';
+            transactions.forEach(transaction => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <input type="checkbox" data-id="${transaction.id}" class="h-4 w-4 text-blue-600 rounded transaction-checkbox">
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${transaction.id}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${transaction.user}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatCFA(transaction.amount)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${getStatusBadge(transaction.status)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${transaction.date}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+            updateStats(); // Mise à jour des stats après le rendu
+            updateActionButtons(); // Mettre à jour l'état des boutons d'action
+            
+            // Re-attacher les écouteurs pour les nouvelles checkboxes
+            document.querySelectorAll('.transaction-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', updateActionButtons);
+            });
+        }
+        
+        // Fonction pour obtenir les IDs sélectionnés
+        function getSelectedIds() {
+            return Array.from(document.querySelectorAll('.transaction-checkbox:checked'))
+                        .map(cb => cb.dataset.id);
+        }
+
+        // Fonction pour mettre à jour l'état des boutons Modifier/Supprimer
+        function updateActionButtons() {
+            const selectedCount = getSelectedIds().length;
+            
+            // Le bouton Modifier est actif si EXACTEMENT une ligne est sélectionnée
+            editBtn.disabled = selectedCount !== 1;
+            
+            // Le bouton Supprimer est actif si AU MOINS une ligne est sélectionnée
+            deleteBtn.disabled = selectedCount === 0;
+
+            // Mettre à jour l'état de la checkbox "Tout sélectionner"
+            const totalCount = transactions.length;
+            selectAllCheckbox.checked = totalCount > 0 && selectedCount === totalCount;
+            selectAllCheckbox.indeterminate = selectedCount > 0 && selectedCount < totalCount;
+        }
+
+        // --- Fonctions CRUD (Create, Read, Update, Delete) ---
+
+        // 1. Ajouter / Modifier (CRUD: Create/Update)
+        function openModal(mode, transaction = null) {
+            transactionForm.reset();
+            transactionModal.classList.remove('hidden');
+            transactionModal.classList.add('flex');
+            
+            isEditing = mode === 'edit';
+
+            if (isEditing && transaction) {
+                modalTitle.textContent = 'Modifier la Transaction ' + transaction.id;
+                saveBtn.textContent = 'Sauvegarder les Changements';
+                document.getElementById('transaction-id').value = transaction.id;
+                document.getElementById('user-input').value = transaction.user;
+                document.getElementById('amount-input').value = transaction.amount;
+                document.getElementById('status-input').value = transaction.status;
+                document.getElementById('date-input').value = transaction.date;
+            } else {
+                modalTitle.textContent = 'Ajouter une Nouvelle Transaction';
+                saveBtn.textContent = 'Enregistrer';
+                document.getElementById('transaction-id').value = '';
+                // Pré-remplir la date du jour
+                document.getElementById('date-input').value = new Date().toISOString().substring(0, 10);
+            }
+        }
+
+        function closeModal() {
+            transactionModal.classList.add('hidden');
+            transactionModal.classList.remove('flex');
+        }
+
+        function handleSaveTransaction(event) {
+            event.preventDefault();
+            
+            const id = document.getElementById('transaction-id').value;
+            const user = document.getElementById('user-input').value;
+            const amount = parseInt(document.getElementById('amount-input').value);
+            const status = document.getElementById('status-input').value;
+            const date = document.getElementById('date-input').value;
+
+            if (isEditing) {
+                // Modification (Update)
+                const index = transactions.findIndex(t => t.id === id);
+                if (index !== -1) {
+                    transactions[index] = { id, user, amount, status, date };
+                }
+            } else {
+                // Ajout (Create)
+                const newId = 'TRX-' + String(transactions.length + 1).padStart(3, '0');
+                transactions.push({ id: newId, user, amount, status, date });
+            }
+            
+            closeModal();
+            renderTable();
+        }
+
+        // 2. Suppression (CRUD: Delete)
+        function openDeleteModal() {
+            deleteModal.classList.remove('hidden');
+            deleteModal.classList.add('flex');
+        }
+
+        function closeDeleteModal() {
+            deleteModal.classList.add('hidden');
+            deleteModal.classList.remove('flex');
+        }
+
+        function handleDeleteTransactions() {
+            const selectedIds = getSelectedIds();
+            // Filtrer le tableau pour ne garder que les transactions NON sélectionnées
+            transactions = transactions.filter(t => !selectedIds.includes(t.id));
+            
+            closeDeleteModal();
+            renderTable(); // Re-rendu du tableau après suppression
+            selectAllCheckbox.checked = false; // Désélectionner tout
+        }
+
+
+        // --- Gestion des Événements ---
+
+        // 1. Bouton Ajouter
+        addBtn.addEventListener('click', () => openModal('add'));
+
+        // 2. Bouton Modifier
+        editBtn.addEventListener('click', () => {
+            const selectedIds = getSelectedIds();
+            if (selectedIds.length === 1) {
+                const transaction = transactions.find(t => t.id === selectedIds[0]);
+                openModal('edit', transaction);
+            }
+        });
+
+        // 3. Bouton Supprimer
+        deleteBtn.addEventListener('click', openDeleteModal);
+        
+        // 4. Formulaire du Modal (Soumission)
+        transactionForm.addEventListener('submit', handleSaveTransaction);
+
+        // 5. Annuler Modal
+        document.getElementById('cancel-modal').addEventListener('click', closeModal);
+
+        // 6. Confirmation Suppression
+        document.getElementById('confirm-delete').addEventListener('click', handleDeleteTransactions);
+        document.getElementById('cancel-delete').addEventListener('click', closeDeleteModal);
+
+        // 7. Checkbox "Tout sélectionner"
+        selectAllCheckbox.addEventListener('change', (e) => {
+            document.querySelectorAll('.transaction-checkbox').forEach(checkbox => {
+                checkbox.checked = e.target.checked;
+            });
+            updateActionButtons();
+        });
+
+        // Initialisation du Tableau et des Stats
+        window.onload = renderTable;
+
+    </script>
+</body>
+</html>
